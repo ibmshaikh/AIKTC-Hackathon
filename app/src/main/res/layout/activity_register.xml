@@ -10,4 +10,95 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.example.codept.hackathon.Register">
 
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:id="@+id/til0"
+        android:layout_height="wrap_content">
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/name"
+            android:inputType="textEmailAddress"
+            android:hint="Name" />
+    </android.support.design.widget.TextInputLayout>
+
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:id="@+id/til"
+        android:layout_below="@+id/til0"
+        android:layout_height="wrap_content">
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/email"
+            android:inputType="textEmailAddress"
+            android:hint="Email" />
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_below="@+id/til"
+        android:id="@+id/til2"
+        android:layout_height="wrap_content">
+        <EditText
+            android:layout_width="match_parent"
+
+            android:layout_height="wrap_content"
+            android:id="@+id/password"
+            android:inputType="textEmailAddress"
+            android:hint="Password" />
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_below="@+id/til2"
+        android:id="@+id/til3"
+        android:layout_height="wrap_content">
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/retypepassword"
+            android:inputType="textEmailAddress"
+            android:hint="Re-type Password" />
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_below="@+id/til3"
+        android:id="@+id/til4"
+        android:layout_height="wrap_content">
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/aadharnumber"
+            android:inputType="number"
+            android:hint="Aadhar Number" />
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_below="@+id/til4"
+        android:id="@+id/til5"
+        android:layout_height="wrap_content">
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/areapin"
+            android:inputType="number"
+            android:hint="Area PinCode" />
+    </android.support.design.widget.TextInputLayout>
+
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_below="@id/til5"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10sp"
+        android:id="@+id/register"
+        android:text="Register"
+
+        />
+
 </RelativeLayout>
