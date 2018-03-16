@@ -6,9 +6,11 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.ButtonBarLayout;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -21,114 +23,119 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.HashMap;
 
-public class Register extends AppCompatActivity {
 
-    private EditText mname,memail,mpassword,mretypepasswor,madharno,marepincode,mphoneno;
-    private Button registerButton;
-    private String name,email,password,retype;
-    private Long aadhar;
-    private int areapin;
-    private Long phoneno;
-    private FirebaseAuth mAuth;
-    private DatabaseReference mref;
-    private ProgressDialog mDialog;
+public class Register extends AppCompatActivity  implements View.OnClickListener {
 
+    private Button buttonSignup;
+    private EditText editTextEmail;
+    private EditText editTextPassword;
+    private FirebaseAuth firebaseAuth;
+    private ProgressDialog progressDialog;
+    private EditText retype;
+    private TextView textViewSignin;
+    private EditText mphone,mname;
+    private String name;
+    private Long phno;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-        mAuth=FirebaseAuth.getInstance();
-        mref= FirebaseDatabase.getInstance().getReference();
 
-        if (mAuth.getCurrentUser()!=null){
 
+        firebaseAuth = FirebaseAuth.getInstance();
+
+        //if getCurrentUser does not returns null
+        if(firebaseAuth.getCurrentUser() != null){
+            //that means user is already logged in
+            //so close this activity
             finish();
-            startActivity(new Intent(getApplicationContext(),Main2Activity.class));
 
+            //and open profile activity
+            startActivity(new Intent(getApplicationContext(), Main2Activity.class));
         }
 
-        mname=(EditText)findViewById(R.id.name);
-        memail=(EditText)findViewById(R.id.email);
-        mpassword=(EditText)findViewById(R.id.password);
-        mretypepasswor=(EditText)findViewById(R.id.retypepassword);
-        madharno=(EditText)findViewById(R.id.aadharnumber);
-        marepincode=(EditText)findViewById(R.id.areapin);
-        mphoneno=(EditText)findViewById(R.id.phone);
-        registerButton=(Button)findViewById(R.id.register);
-        mDialog=new ProgressDialog(Register.this);
-
-        registerButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                mDialog.show();
-                mDialog.setMessage("Loading");
-
-                name=mname.getText().toString();
-                email=memail.getText().toString();
-                password=mpassword.getText().toString();
-                retype=mretypepasswor.getText().toString();
-                aadhar=Long.parseLong(madharno.getText().toString());
-                areapin=Integer.parseInt(marepincode.getText().toString());
-                phoneno=Long.parseLong(mphoneno.getText().toString());
-
-                if (!name.isEmpty() && !email.isEmpty() && !password.isEmpty() && !retype.isEmpty() && aadhar!=0 && areapin!=0 && phoneno!=0){
-
-                    if (password.equals(retype)){
-
-
-                        final HashMap hashMap=new HashMap();
-                        hashMap.put("Name",name);
-                        hashMap.put("email",email);
-                        hashMap.put("Aadhar Number",aadhar);
-                        hashMap.put("Area Pin",areapin);
-                        hashMap.put("Phone Number",phoneno);
-                        String a= String.valueOf(aadhar);
-
-                        DatabaseReference aref=FirebaseDatabase.getInstance().getReference().child("User").child(a);
-                        aref.push().setValue(hashMap).addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-
-                                mAuth.createUserWithEmailAndPassword(email,retype).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<AuthResult> task) {
-                                        mDialog.dismiss();
-
-                                        Intent i=new Intent(Register.this,MainActivity.class);
-                                        startActivity(i);
-                                        finish();
-                                    }
-                                });
-                            }
-                        });
-
-
-
-
-                    }
-                    else {
-
-                        mretypepasswor.setError("Password did not maatch");
-
-                    }
-
-
-                }
-
-                else {
-
-                    Toast.makeText(Register.this,"Field Should not me empty",Toast.LENGTH_LONG).show();
-
-                }
-
-            }
-        });
-
+        editTextEmail = (EditText) findViewById(R.id.input_email);
+        editTextPassword = (EditText) findViewById(R.id.input_password);
+        buttonSignup = (Button) findViewById(R.id.btn_login);
+        retype = (EditText) findViewById(R.id.input_retype);
+        progressDialog = new ProgressDialog(this);
+        buttonSignup.setOnClickListener(this);
+        mname=(EditText)findViewById(R.id.Name);
+        mphone=(EditText)findViewById(R.id.phoneno);
 
 
 
     }
+
+
+
+
+
+    public void onClick(View v) {
+        if (v == this.buttonSignup) {
+            registerUser();
+        }
+    }
+
+    private void registerUser(){
+
+        //getting email and password from edit texts
+        final String email = editTextEmail.getText().toString().trim();
+        String password  = editTextPassword.getText().toString().trim();
+
+        phno=Long.parseLong(mphone.getText().toString());
+
+        name=mname.getText().toString();
+
+        String ret=retype.getText().toString().trim();
+        if (ret.equals(password)){
+            Toast.makeText(Register.this,"Password not match",Toast.LENGTH_SHORT).show();
+        }
+        //checking if email and passwords are empty
+        if(TextUtils.isEmpty(email)){
+            Toast.makeText(this,"Please enter email",Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        if(TextUtils.isEmpty(password)){
+            Toast.makeText(this,"Please enter password",Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        //if the email and password are not empty
+        //displaying a progress dialog
+
+        progressDialog.setMessage("Registering Please Wait...");
+        progressDialog.show();
+
+        //creating a new user
+        firebaseAuth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        //checking if success
+                        if(task.isSuccessful()){
+
+                            HashMap h=new HashMap();
+                            h.put("Name",name);
+                            h.put("Email",email);
+                            h.put("Phone Number",phno);
+                            String a=FirebaseAuth.getInstance().getCurrentUser().getUid().toString();
+                            DatabaseReference mref=FirebaseDatabase.getInstance().getReference().child("Users").child(a);
+                            mref.push().setValue(h);
+
+                            finish();
+                            startActivity(new Intent(getApplicationContext(), Main2Activity.class));
+                        }else{
+                            //display some message here
+                            Toast.makeText(Register.this,"Registration Error",Toast.LENGTH_LONG).show();
+                        }
+                        progressDialog.dismiss();
+                    }
+                });
+
+    }
+
 }
